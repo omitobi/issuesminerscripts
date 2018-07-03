@@ -10,6 +10,24 @@ for (pid_ in pids_) {
   my.data <- read.csv2(paste(initial_path, "/Project",pid_,"Data.csv", sep = ''), sep=";")
 }
 
-plot(my.data$Actual, my.data$Estimation)
+View(my.data)
+head(my.data[,c('Estimation', 'Actual', 'Difference')])
 
-ggplot(my.data, aes(x=Actual, y=Estimation))+geom_point()
+my.data.summary <- summary.data.frame(my.data[,c('Estimation', 'Actual', 'Difference')])
+my.data.summary
+
+summary(my.data$Estimation)
+
+plot(my.data$Estimation, type="l")
+lines(my.data$Actual, col="red")
+
+View(my.data.summary)
+my.data$Difference <- abs(my.data$Actual - my.data$Estimation)
+
+my.data$Compare <- cbind(ifelse(my.data$Actual==my.data$Estimation,0,ifelse(my.data$Actual>my.data$Estimation,1,-1)))
+
+
+
+ggplot(my.data, aes(x=Actual, y=Estimation)) + geom_density()
+# geom_point()+geom_text(aes(label=paste0('Actual', 'Estimation')), size=3, show.legend=FALSE)+
+# theme_classic()
