@@ -11,7 +11,22 @@ for (pid_ in pids_) {
   my.data <- read.csv2(paste(initial_path, "/Project",pid_,"Data.csv", sep = ''), sep=";")
 }
 
-my.data_ <- arrange(my.data, Date)
+head(my.data)
+
+hist(my.data$Actual)
+
+hist(my.data$Estimation)
+
+hist(my.data$ProjectChurnEstimation)
+
+barplot(my.data$Actual)
+
+hist(my.data$Actual, plot=true)
+tail(my.data)
+unique(my.data$ModuleLevel)
+
+sub.my_data <- subset(my.data, ModuleLevel == 4)
+my.data_ <- sub.my_data[order(sub.my_data$Estimation),]
 
 head(my.data_)
 # View(my.data)
@@ -35,6 +50,12 @@ head(my.data_)
 # ggplot(my.data, aes(x=Actual, y=Estimation, color=ModuleLevel)) + geom_point() + 
 #   stat_smooth() +
 #   facet_wrap(~ModuleDateRevisionId)
+
+plot(density(my.data_$Estimation))
+
+plot(my.data_$Estimation, my.data_$ModuleDateRevisionId, type='o')
+
+ggplot(my.data_, aes(y=Estimation, x=ModuleDateRevisionId))+geom_line()
 
 ggplot(my.data_, aes(x=X, y = value, color = variable)) + 
   geom_line(aes(y = Estimation, col = "Estimation")) + 

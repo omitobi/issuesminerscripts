@@ -109,7 +109,7 @@ for(pid_ in pids_) {
 
 # write.csv2(x=my.cor.res_, file = 'ProjectCostFixesComparreCorr.csv')
 
-# my.cor.res_1 <- read.csv2(paste("ProjectCostFixesComparreCorr.csv", sep=";"))
+my.cor.res_1 <- read.csv2(paste("ProjectCostFixesComparreCorr.csv", sep=";"))
 # my.new.cor <- na.omit(my.cor.res_)
 
 head(my.cor.res_1)
@@ -119,26 +119,38 @@ head(my.cor.res_1)
 
 # unique(filter(my.cor.res_1, ProjectId==6)$ModuleLevel)
 
-p_pid <- 9
-{
-  png(paste("Project",p_pid , "Cost-Fixes-CompareCorr.png", sep=""), unit=imgunit, width=300, height=200, res=600)
-  my.p <- ggplot(filter(my.cor.res_1, ProjectId==p_pid), mapping=aes(y=Correlation,
-                          x=Date,
+unique(my.cor.res_1$ModuleLevel)
+
+
+  # png(paste("Project",p_pid , "Cost-Fixes-CompareCorr.png", sep=""), unit=imgunit, width=300, height=200, res=600)
+  my.p1 <- ggplot(filter(my.cor.res_1, ProjectId==p_pid), mapping=aes(y=Correlation,
+                          x=Date, color=ModuleLevel
                           # color=ModuleLevel,
-                          size=ModuleLevel
-                          ))+theme_bw()+ylim(-1,1)+geom_point(aes(colour=ModuleLevel),               # colour depends on cond2
-                                                  size=3) + 
-    scale_colour_gradientn(colours=rainbow(3)) +
-    theme(axis.text.x=element_text(size=8, angle = 90, margin= margin(t = 0, r = 20, b = 0, l = 0)), axis.title.x=element_text(size=16),
+                          # size=ModuleLevel
+                          ))+
+    theme_bw()+
+    ylim(-1,1)+
+    geom_point(
+                            # aes(group=ModuleLevel, color=ModuleLevel),               # colour depends on cond2
+                                                  # size=3
+                            ) + 
+    # facet_wrap( ~ProjectId)+
+    # scale_colour_gradientn(colours=rainbow(3)) +
+    theme(axis.text.x=element_text(size=8, angle = 90, margin= margin(t = 0, r = 20, b = 0, l = 0)),
+          axis.title.x=element_text(size=16),
           axis.text.y=element_text(size=14), axis.title.y=element_text(size=16),
-          plot.title=element_text(size=20, face="bold", color="darkgreen"))
+          plot.title=element_text(size=20, face="bold", color="darkgreen"),
+          legend.position="top") +
+    scale_colour_gradientn(limits = c(2, 4), breaks = c(2, 3, 4),
+                           guide = guide_colorbar(ticks = TRUE, ticks.linewidth = 2),
+                           colours=rainbow(3))
+    # scale_color_manual(values=unique(ModuleLevel))
   
-  
-  try(print(my.p))
-  dev.off()
+  # try(print(my.p))
+  # dev.off()
 }
-  
-  
+
+my.p$1
 
 max(my.cor.res_$Correlation)
 plot(density(my.cor.res_$Correlation))

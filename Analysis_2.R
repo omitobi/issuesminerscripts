@@ -20,7 +20,7 @@ View(my.bfreqchurn)
 # my_data <- mtcars
 # head(my_data, 6)
 
-pids <- c(1,4,6,9) #project ids
+pids <- c(1) #project ids
 mlevs <- c(2,3,4) #module levels
 my.cor.result <- data.frame() #initial datafrome to keep the data
 my.cor.result.loc <- data.frame() #initial datafrome to keep the data
@@ -75,9 +75,12 @@ for(pid in pids) {
   
 }
 
-write.csv2(x=my.cor.result, file = 'CorResultProjectCostFixesCorr.csv')
-write.csv2(x=my.cor.result.loc, file = 'CorResultProjectFixesLocCorr.csv')
+# write.csv2(x=my.cor.result, file = 'CorResultProjectCostFixesCorr.csv')
+# write.csv2(x=my.cor.result.loc, file = 'CorResultProjectFixesLocCorr.csv')
 
+
+my.cor.result <- read.csv2(file = 'CorResultProjectCostFixesCorr.csv', sep = ';')
+my.cor.result.loc <- read.csv2(file = 'CorResultProjectFixesLocCorr.csv', sep = ';')
 
 View(my.cor.result)
 View(my.cor.result.loc)
@@ -96,7 +99,7 @@ for(pid in pids) {
     
     print(paste('Project ', pid, 'Level', mlev))
     sign.test1
-    capture.output(print(sign.test1), file=paste("Project", pid, "Level", mlev, "ModuleCorrelationSignTest.txt", sep=""))
+    # capture.output(print(sign.test1), file=paste("Project", pid, "Level", mlev, "ModuleCorrelationSignTest.txt", sep=""))
     #<--/>
     
     #Fixes and Size(LOC)
@@ -107,7 +110,7 @@ for(pid in pids) {
     
     print(paste('Project ', pid, 'Level', mlev, 'FixesLocCorr'))
     sign.test1.loc
-    capture.output(print(sign.test1.loc), file=paste("Project", pid, "Level", mlev, "ModuleFixesLocSignTest.txt", sep=""))
+    # capture.output(print(sign.test1.loc), file=paste("Project", pid, "Level", mlev, "ModuleFixesLocSignTest.txt", sep=""))
     #<--/>
     
     cost_fixes_corr <- my.data.order
@@ -118,15 +121,15 @@ for(pid in pids) {
     
     df_corr <- make.groups(df_corr.cf, df_corr.fs)
     
-    png(paste("Project", pid, "Level", mlev, "Cost-Fixes-ModuleCorrelation.png", sep=""), unit=imgunit, width=300, height=200, res=imgres)
+    # png(paste("Project", pid, "Level", mlev, "Cost-Fixes-ModuleCorrelation.png", sep=""), unit=imgunit, width=300, height=200, res=imgres)
     my.p <- ggplot(df_corr, aes(x=Date, y=Correlation, color=which))+theme_bw()+geom_point()+ylim(-1, 1) +
       scale_color_manual(name="Metric", labels = c("Cost-Fixes","Fixes-LOC"), values=c("red", "blue")) +
       theme(axis.text.x=element_text(size=14), axis.title.x=element_text(size=16),
             axis.text.y=element_text(size=14), axis.title.y=element_text(size=16),
             plot.title=element_text(size=20, face="bold", color="darkgreen"))
-    
-    try(print(my.p + geom_step() + theme(axis.text.x=element_text(angle=90))))
-    dev.off()
+    my.p
+    # try(print(my.p + geom_step() + theme(axis.text.x=element_text(angle=90))))
+    # dev.off()
   }
   
 }
