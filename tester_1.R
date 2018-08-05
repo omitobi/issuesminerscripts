@@ -109,50 +109,62 @@ for(pid_ in pids_) {
 
 # write.csv2(x=my.cor.res_, file = 'ProjectCostFixesComparreCorr.csv')
 
-my.cor.res_1 <- read.csv2(paste("ProjectCostFixesComparreCorr.csv", sep=";"))
+my.cor.res_1 <- read.csv2(
+  "ProjectSizeFixesCompareCorrelation.csv"  #Change to ProjectCostFixesCompareCorrelation.csv for ModuleSize, ProjectSizeFixesCompareCorrelation.csv for AC/Cost
+  , sep=";")
 # my.new.cor <- na.omit(my.cor.res_)
 
-head(my.cor.res_1)
-
-# sort(my.cor.res_$Correlation, decreasing = TRUE)[1]
-
-
-# unique(filter(my.cor.res_1, ProjectId==6)$ModuleLevel)
-
-unique(my.cor.res_1$ModuleLevel)
-
-p_pid <- 9
-{
-  # png(paste("Project",p_pid , "Cost-Fixes-CompareCorr.png", sep=""), unit=imgunit, width=300, height=200, res=600)
-  my.p <- ggplot(filter(my.cor.res_1, ProjectId==p_pid), mapping=aes(y=Correlation,
-                          x=Date, color=ModuleLevel
-                          # color=ModuleLevel,
-                          # size=ModuleLevel
-                          ))+
+plot.project = function(project_id) {
+  my.p <- ggplot(filter(my.cor.res_1, ProjectId==project_id), 
+                 mapping=aes(y=Correlation, x=Date, color=ModuleLevel, size=3))+
     theme_bw()+
     ylim(-1,1)+
-    geom_point(
-                            # aes(group=ModuleLevel, color=ModuleLevel),               # colour depends on cond2
-                                                  # size=3
-                            ) + 
-    # facet_wrap( ~ProjectId)+
-    # scale_colour_gradientn(colours=rainbow(3)) +
+    geom_point() + 
     theme(axis.text.x=element_text(size=8, angle = 90, margin= margin(t = 0, r = 20, b = 0, l = 0)),
           axis.title.x=element_text(size=16),
           axis.text.y=element_text(size=14), axis.title.y=element_text(size=16),
-          plot.title=element_text(size=20, face="bold", color="darkgreen"),
-          legend.position="top") +
+          plot.title=element_text(size=20, face="bold", color="darkgreen")) +
     scale_colour_gradientn(limits = c(2, 4), breaks = c(2, 3, 4),
                            guide = guide_colorbar(ticks = TRUE, ticks.linewidth = 2),
                            colours=rainbow(3))
-    # scale_color_manual(values=unique(ModuleLevel))
-  
-  my.p
-  # try(print(my.p))
-  # dev.off()
+  return (my.p)
 }
   
-  
+save.plot = function(my.plot, type, project_id) {
+  png_file <- paste("ProjectCombine", type, "-Fixes-CompareCorrelation.png", sep="")
+  if (project_id) {
+    png_file <- paste("Project",project_id , type,"-Fixes-CompareCorrelation.png", sep="")
+  } 
+  png(png_file, unit=imgunit, width=300, height=200, res=600)
+  try(print(my.plot))
+  dev.off()
+}
+
+
+my.p1 <- plot.project(1)
+my.p4 <- plot.project(4)
+my.p6 <- plot.project(6)
+my.p9 <- plot.project(9)
+
+my.p1
+
+# multiplot() is down this script ;)
+my.pmulti <- multiplot(my.p1, my.p4, my.p6, my.p9, cols=2)
+save.plot(my.p1, 'Size', 1) # Size for ModuleSize-Fixes plot, while Cost for Cost-Fixes plot
+save.plot(my.p4, 'Size', 4)
+save.plot(my.p6, 'Size', 6)
+save.plot(my.p9, 'Size', 9)
+
+
+
+
+
+
+
+
+
+
+
 
 max(my.cor.res_$Correlation)
 plot(density(my.cor.res_$Correlation))
@@ -314,4 +326,53 @@ percent_threshold = function(percent = 90, total = 25636756) {
 check_at_percent = function(at_value, field = 'fixesDifference') {
   rs_ = dbSendQuery(mydb, paste("select ", field," from projectcostdifference order by fixesDifference ASC limit 1 offset ", at_value))
   return (fetch(rs_, n=-1))
+}
+
+
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+# http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
 }
