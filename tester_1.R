@@ -121,9 +121,10 @@ head(my.cor.res_1)
 
 unique(my.cor.res_1$ModuleLevel)
 
-
+p_pid <- 9
+{
   # png(paste("Project",p_pid , "Cost-Fixes-CompareCorr.png", sep=""), unit=imgunit, width=300, height=200, res=600)
-  my.p1 <- ggplot(filter(my.cor.res_1, ProjectId==p_pid), mapping=aes(y=Correlation,
+  my.p <- ggplot(filter(my.cor.res_1, ProjectId==p_pid), mapping=aes(y=Correlation,
                           x=Date, color=ModuleLevel
                           # color=ModuleLevel,
                           # size=ModuleLevel
@@ -146,11 +147,12 @@ unique(my.cor.res_1$ModuleLevel)
                            colours=rainbow(3))
     # scale_color_manual(values=unique(ModuleLevel))
   
+  my.p
   # try(print(my.p))
   # dev.off()
 }
-
-my.p$1
+  
+  
 
 max(my.cor.res_$Correlation)
 plot(density(my.cor.res_$Correlation))
