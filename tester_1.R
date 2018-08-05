@@ -110,9 +110,9 @@ for(pid_ in pids_) {
 # write.csv2(x=my.cor.res_, file = 'ProjectCostFixesComparreCorr.csv')
 
 my.cor.res_1 <- read.csv2(
-  "ProjectSizeFixesComparreCorr.csv"  #Change to ProjectSizeFixesCompareCorrelation.csv for ModuleSize,
+  "ProjectSizeFixesBeforeCompareCorrelation.csv"  #Change to ProjectSizeFixesCompareCorrelation.csv for ModuleSize,
                                       #ProjectCostFixesCompareCorrelation.csv for AC/Cost
-                                      #ProjectCostFixesBeforeCompareCorrelation.csv for AC/Cost
+                                      #ProjectSizeFixesBeforeCompareCorrelation.csv for SizeF-ixes before Comparing size
   , sep=";")
 # my.new.cor <- na.omit(my.cor.res_)
 
