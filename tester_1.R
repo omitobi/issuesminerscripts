@@ -110,23 +110,29 @@ for(pid_ in pids_) {
 # write.csv2(x=my.cor.res_, file = 'ProjectCostFixesComparreCorr.csv')
 
 my.cor.res_1 <- read.csv2(
-  "ProjectSizeFixesCompareCorrelation.csv"  #Change to ProjectCostFixesCompareCorrelation.csv for ModuleSize, ProjectSizeFixesCompareCorrelation.csv for AC/Cost
+  "ProjectSizeFixesComparreCorr.csv"  #Change to ProjectSizeFixesCompareCorrelation.csv for ModuleSize,
+                                      #ProjectCostFixesCompareCorrelation.csv for AC/Cost
+                                      #ProjectCostFixesBeforeCompareCorrelation.csv for AC/Cost
   , sep=";")
 # my.new.cor <- na.omit(my.cor.res_)
 
-plot.project = function(project_id) {
+plot.project = function(project_id, title_=NULL) {
   my.p <- ggplot(filter(my.cor.res_1, ProjectId==project_id), 
-                 mapping=aes(y=Correlation, x=Date, color=ModuleLevel, size=3))+
+                 mapping=aes(y=Correlation, x=Date, color=ModuleLevel))+
     theme_bw()+
     ylim(-1,1)+
-    geom_point() + 
+    geom_point(size=3) + 
     theme(axis.text.x=element_text(size=8, angle = 90, margin= margin(t = 0, r = 20, b = 0, l = 0)),
           axis.title.x=element_text(size=16),
           axis.text.y=element_text(size=14), axis.title.y=element_text(size=16),
-          plot.title=element_text(size=20, face="bold", color="darkgreen")) +
+          plot.title=element_text(size=14, face="bold", color="darkgreen")) +
     scale_colour_gradientn(limits = c(2, 4), breaks = c(2, 3, 4),
                            guide = guide_colorbar(ticks = TRUE, ticks.linewidth = 2),
                            colours=rainbow(3))
+  
+  if (!is.null(title_)) {
+    my.p <- my.p + ggtitle(title_)
+  }
   return (my.p)
 }
   
@@ -146,16 +152,21 @@ my.p4 <- plot.project(4)
 my.p6 <- plot.project(6)
 my.p9 <- plot.project(9)
 
-my.p1
+my.p9
 
-# multiplot() is down this script ;)
-my.pmulti <- multiplot(my.p1, my.p4, my.p6, my.p9, cols=2)
+# multiplot() function is down this script ;)
+my.pmulti <- multiplot(my.p1+ggtitle('JQuery'),
+                       my.p4+ggtitle('Font-Awesome'),
+                       my.p6+ggtitle('ReactJS'),
+                       my.p9+ggtitle('Atom'), cols=2)
+
 save.plot(my.p1, 'Size', 1) # Size for ModuleSize-Fixes plot, while Cost for Cost-Fixes plot
 save.plot(my.p4, 'Size', 4)
 save.plot(my.p6, 'Size', 6)
 save.plot(my.p9, 'Size', 9)
+# save.plot(my.plot = my.p9, type = NULL, project_id = NULL)
 
-
+my.pmulti
 
 
 
